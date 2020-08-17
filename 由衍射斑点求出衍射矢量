@@ -1,0 +1,84 @@
+#由XYZ解出xyz 只是方向
+#X1=float(input("X1="))
+#Y1=float(input("Y1="))
+#Z1=float(input("Z1="))
+#X2=float(input("X2="))
+#Y2=float(input("Y2="))
+#Z2=float(input("Z2="))
+
+import math
+import numpy as np
+
+X1=float(-8.021)
+Y1=float(-15)
+Z1=float(8.645)
+X2=float(0.785)
+Y2=float(-15)
+Z2=float(-8.148)
+
+a=X1*X1+Z1*Z1
+b=2*Y1*X1
+c=-X1*X1
+h=b*b-4*a*c  #一元二次方程的解，百度来的
+w1=(-b+math.sqrt(h))/(2*a)  #sqrt函数求平方根
+w2=(-b-math.sqrt(h))/(2*a)
+y1=-1
+x1=-w1
+x2=-w2
+z1=x1*Z1/X1
+z2=x2*Z1/X1
+L1=np.array([x1,y1,z1])
+L2=np.array([0,-1,0])
+LONG1=np.sqrt(L1.dot(L1))
+LONG2=np.sqrt(L2.dot(L2))
+cos_angle=L1.dot(L2)/(LONG1*LONG2)
+angle=np.arccos(cos_angle)
+angle_=angle*180/np.pi
+if angle_>45:
+    x1=x2
+    y1=-1
+    z1=z2
+else:
+    x1=x1
+    y1=-1
+    z1=z1
+
+    
+aa=X2*X2+Z2*Z2
+bb=2*Y2*X2
+cc=-X2*X2
+
+hh=bb*bb-4*aa*cc  #一元二次方程的解，百度来的
+
+ww1=(-bb+math.sqrt(hh))/(2*aa)  #sqrt函数求平方根
+ww2=(-bb-math.sqrt(hh))/(2*aa)
+
+yy1=-1
+xx1=-ww1
+xx2=-ww2
+zz1=xx1*Z2/X2
+zz2=xx2*Z2/X2
+
+L1=np.array([xx1,yy1,zz1])
+L2=np.array([0,-1,0])
+LONG1=np.sqrt(L1.dot(L1))
+LONG2=np.sqrt(L2.dot(L2))
+cos_angle=L1.dot(L2)/(LONG1*LONG2)
+angle=np.arccos(cos_angle)
+angle_=angle*180/np.pi
+if angle_>45:
+    xx1=xx2
+    yy1=-1
+    zz1=zz2
+else:
+    xx1=xx1
+    yy1=-1
+    zz1=zz1
+
+
+print('x1,y1,z1',x1,y1,z1)
+print('x2,y2,z2',xx1,yy1,zz1)
+        
+
+
+
