@@ -1,0 +1,205 @@
+import math
+import numpy as np
+
+a = float(6)
+b = float(6)
+c = float(6)
+i1 = float(90)#晶胞bc γ夹角
+i2 = float(90)#晶胞ac β夹角
+i3 = float(90)#晶胞ab α夹角
+t=float(-15)
+
+
+Φx0 = float(45)#旋转角度
+Φy0 = float(0)
+Φz0 = float(0)
+
+
+Φx = math.radians(Φx0)
+Φy = math.radians(Φy0)
+Φz = math.radians(Φz0)
+
+
+
+
+cos1=math.cos(math.radians(i1))
+cos2=math.cos(math.radians(i2))
+cos3=math.cos(math.radians(i3))
+sin1=math.sin(math.radians(i1))
+sin2=math.sin(math.radians(i2))
+sin3=math.sin(math.radians(i3))
+
+v=a*b*c*((abs(cos1**2+cos2**2+cos3**2-2*cos1*cos2*cos3-1))**0.5)
+
+
+c1=c*cos2
+c2=(c*cos1-c*cos2*cos3)/sin3
+c3=np.cross(np.array([a,0,0]),np.array([b*cos3,b*sin3,0]))#[0,0,平行四边形面积]
+c3=c3.tolist()
+c3=v/abs(c3[2])#体积除以底面面积 高 c在z轴分量 分量一定是正的！！！！
+
+
+aa=[a,0,0]
+bb=[b*cos3,b*sin3,0]
+cc=[c1,c2,c3]
+
+
+
+
+
+astar1=np.cross(np.array(bb),np.array(cc))
+astar2=astar1.tolist()
+astar=[i*2*math.pi/v for i in astar2]
+
+
+bstar1=np.cross(np.array(cc),np.array(aa))
+bstar2=bstar1.tolist()
+bstar=[i*2*math.pi/v for i in bstar2]
+
+
+cstar1=np.cross(np.array(aa),np.array(bb))
+cstar2=cstar1.tolist()
+cstar=[i*2*math.pi/v for i in cstar2]
+
+
+
+
+
+
+A=np.array([[astar[0], bstar[0], cstar[0]],[astar[1], bstar[1], cstar[1]],[astar[2], bstar[2], cstar[2]]])
+
+print('空间变形矩阵=',A)
+
+
+
+Cz = np.array([[math.cos(Φz),-math.sin(Φz),0],[math.sin(Φz),math.cos(Φz),0],[0,0,1]])
+Cy = np.array([[math.cos(Φy),0,math.sin(Φy)],[0,1,0],[-math.sin(Φy),0,math.cos(Φy)]])
+Cx = np.array([[1,0,0],[0,math.cos(Φx),-math.sin(Φx)],[0,math.sin(Φx),math.cos(Φx)]])
+
+C = np.dot(Cz,np.dot(Cy,Cx))
+print("空间旋转矩阵为=",C)
+
+
+    
+
+
+
+
+
+
+
+
+
+#生成倒格矢
+s=[]
+h=-8
+while h<9:
+    k=-8
+    while k<9:
+        l=-8
+        while l<9:
+            if ((h*k*l) != 0 and (h+k)%2==0 and (h+l)%2==0 and (k+l)%2==0) or (h*k*l==0 and (h+k+l)%4==0 and h%2==0 and k%2==0 and l%2==0):
+                s.append([h,k,l])
+            l=l+1
+        k=k+1
+    h=h+1
+
+print (len(s))
+index1=0
+while index1<len(s)-1:
+    index2=index1+1
+    while index2<len(s):
+        index3=-4
+        while index3<=4:
+            if ((s[index1])[0])*(index3)==(s[index2])[0] and ((s[index1])[1]*(index3))==(s[index2])[1] and ((s[index1])[2]*(index3))==(s[index2])[2]:
+                s[index2]=[0,0,0]
+            elif ((s[index2])[0])*(index3)==(s[index1])[0] and ((s[index2])[1]*(index3))==(s[index1])[1] and ((s[index2])[2]*(index3))==(s[index1])[2]:
+                s[index1]=[0,0,0]
+            index3=index3+1
+        index2=index2+1
+    index1=index1+1     
+
+ss=[]
+for i in s:
+    if not i in ss:
+        ss.append(i)
+ss.remove([0,0,0])
+
+print (len(ss))
+#筛选倒格矢 并求斑点
+
+m=[]
+n=[]
+M=[]
+N=[]
+na=[]#出射方向集合
+nb=[]#对应hkl集合
+nc=[]#HKL集合
+
+
+for vector in ss:
+    h = int(vector[0])
+    k = int(vector[1])
+    l = int(vector[2])
+    H0 = np.array([[h],[k],[l]])
+    H1=np.dot(A,H0)
+    H2=H1.tolist()
+  
+    H = float((H2[0])[0])
+    K = float((H2[1])[0])
+    L = float((H2[2])[0])
+
+    H3=np.dot(C,H1)
+    H4=H3.tolist()
+    x = float((H4[0])[0])
+    y = float((H4[1])[0])
+    z = float((H4[2])[0])
+    
+    
+    if x==0:
+        continue
+
+    w = (x*x+y*y+z*z)/(2*x)
+    
+    if  (x-w)==0:
+        continue 
+    
+    if w<-(2*math.pi/1.24) or w>0:
+        continue
+    
+
+    y1=t*y/(x-w)
+    z1=t*z/(x-w)
+    if y1>15 or y1<-15 or z1>15 or z1<-15:
+        continue
+
+
+    Q=[0,0]
+    Q[0]=y1
+    Q[1]=z1
+    M.append(y1)
+    N.append(z1)
+    m.append(Q)
+    nb.append([h,k,l])#对应hkl集合
+    nc.append([H,K,L])
+    n.append([x,y,z])
+#print('[h,k,l]=',nb)
+#print('[H,K,L]=',nc)
+#print('[x,y,z]=',n)
+#print('衍射点在屏幕上坐标=',m)
+
+
+
+
+
+
+    
+import matplotlib.pyplot as plt 
+plt.figure(figsize=(8,8),dpi=80)
+plt.xlim(xmax=15,xmin=-15)
+plt.ylim(ymax=15,ymin=-15)
+plt.plot(M,N,'ro')
+plt.show()
+
+
+
