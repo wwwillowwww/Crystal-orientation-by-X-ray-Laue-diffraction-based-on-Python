@@ -1,0 +1,152 @@
+#由HKL!!!!!!乘以变形矩阵之后的 xyz——解出矩阵
+
+h1=float(-2.31382261358114)
+k1=float(-6.941467840743421)
+l1=float(0)
+
+
+h2=float(1.15691130679057)
+k2=float(-5.78455653395285)
+l2=float(-1.1569113067905699)
+
+x2=float(-0.23535326407929913)
+y2=float(-1)
+z2=float(0.2536627562605087)
+x1=float(0.024463831635514573)
+y1=float(-1)
+z1=float(-0.2539252231416213)
+
+
+
+
+import numpy as np
+import math 
+
+xa=np.array([h1,k1,l1])
+ya=np.array([h2,k2,l2])
+
+LONG1=np.sqrt(xa.dot(xa))
+LONG2=np.sqrt(ya.dot(ya))
+
+cos_angle=xa.dot(ya)/(LONG1*LONG2)
+angle=np.arccos(cos_angle)
+
+cos=math.cos(angle/2)
+sin=math.sin(angle/2)
+angle_=angle*180/np.pi
+print('向量夹角（°）=',angle_)
+
+
+
+g1=[h1,k1,l1]
+g2=[h2,k2,l2]
+g3=[i*LONG1 for i in g2]
+g4=[i*LONG2 for i in g1]
+g5=[]
+for i in range(0,len(g3)):
+    summm=g3[i]+g4[i]
+    g5.append(summm)
+g6=[]
+for i in range(0,len(g3)):
+    summm=g3[i]-g4[i]
+    g6.append(summm)
+    
+    
+    
+    
+H=[i/(2*LONG1*LONG2*cos) for i in g5]
+K=[i/(2*LONG1*LONG2*sin) for i in g6]
+print('H',H)
+print('K',K)
+g7=np.array(g1)
+g8=np.array(g2)
+g9=np.cross(g7,g8)#单位
+
+
+
+g9=g9.tolist()
+
+L=[i/(LONG1*LONG2*sin) for i in g9]
+
+
+
+print('L',L)
+A1=np.array([H,K,L])
+print('A1',A1)
+
+
+
+
+
+
+
+###################################
+
+
+
+
+
+
+
+
+xaa=np.array([x1,y1,z1])
+yaa=np.array([x2,y2,z2])
+
+LONG4=np.sqrt(xaa.dot(xaa))
+LONG5=np.sqrt(yaa.dot(yaa))
+
+
+
+g11=[x1,y1,z1]
+g22=[x2,y2,z2]
+
+g33=[ii*LONG4 for ii in g22]
+g44=[ii*LONG5 for ii in g11]
+
+g55=[]
+for ii in range(0,len(g33)):
+    summm1=g33[ii]+g44[ii]
+    g55.append(summm1)
+g66=[]
+for ii in range(0,len(g33)):
+    summm1=g33[ii]-g44[ii]
+    g66.append(summm1)
+HH=[ii/(2*LONG4*LONG5*cos) for ii in g55]
+KK=[ii/(2*LONG4*LONG5*sin) for ii in g66]
+
+g77 = np.array(g11)
+g88 = np.array(g22)
+g99 = np.cross(g77,g88)
+
+
+
+
+
+
+LONG6=np.sqrt(g99.dot(g99))
+g99=g99.tolist()
+
+LL=[ii/(LONG4*LONG5*sin) for ii in g99]
+
+
+
+
+
+A2=np.array([HH,KK,LL])
+
+
+print('A2',A2)
+
+print(np.linalg.det(A2))  # 求矩阵的行列式
+
+
+
+
+A22=np.linalg.inv(A2)
+
+A=np.dot(A22,A1)
+
+
+
+print(A)
+
